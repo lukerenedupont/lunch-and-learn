@@ -366,6 +366,15 @@
       font-variant-numeric: tabular-nums;
     }
     body.light .thumb-num { color: rgba(0,0,0,0.28); }
+    .thumb-insert {
+      position: absolute; right: -11px; top: 50%; transform: translateY(-50%);
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--accent); border: none; color: #fff;
+      font-size: 16px; line-height: 1; padding: 0;
+      cursor: pointer; opacity: 0; transition: opacity 0.15s; z-index: 20;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .thumb-wrap:hover .thumb-insert { opacity: 1; }
 
     /* ── theme toggle ── */
     #theme-btn {
@@ -502,7 +511,7 @@
   <div class="slide" data-slide="1">
     <p class="big-quote">"for two years I was using AI.<br>I wasn't actually<br>building anything."</p>
     <div class="divider"></div>
-    <p class="subtitle">chat. image gen. figma plugins. super useful. but none of it felt like making something real.</p>
+    <p class="subtitle">good ideas. great figma files. nothing i could actually ship.</p>
   </div>
 
   <!-- 3 · The gap -->
@@ -715,11 +724,12 @@
   </div>
 
   <!-- 19 · Kill fast -->
-  <div class="slide" data-slide="19">
+  <div class="slide" data-slide="19" data-steps="1">
     <h2>the scratch card took<br>way too long to kill.</h2>
     <div class="divider"></div>
     <p class="subtitle">the music stack got one shot. wrong, cut it. that's the whole difference.</p>
     <p class="subtitle" style="margin-top:20px">trying ambitious things is the whole point. killing them fast when they're not working is the other part.</p>
+    <p class="subtitle step-item" data-step="1" style="margin-top:24px;color:var(--text)">i'm showing you the failures because that's how we all actually learn. hopefully someone in this room knows how to make the scratch card work — and will tell me after.</p>
   </div>
 
   <!-- ═══ CHAPTER 03 ═══ -->
@@ -915,7 +925,8 @@
     <div class="eyebrow muted">what I mean by that</div>
     <h2>your taste is the skill.<br>the tool executes it.</h2>
     <p class="subtitle step-item" data-step="1" style="margin-top:24px">years of knowing what feels right, what's too slow, what's too fast, what's "shopify" and what isn't — that's the thing you're bringing to this.</p>
-    <p class="subtitle step-item" data-step="2" style="margin-top:20px;color:var(--text)">the model doesn't have taste. you do. that's what makes the output good.</p>
+    <p class="subtitle step-item" data-step="2" style="margin-top:20px">i spent years mastering smart animate in figma. i know exactly what a snappy transition feels like. so i just described it — and it built it in swift, with haptics, on a real device.</p>
+    <p class="subtitle step-item" data-step="2" style="margin-top:16px;color:var(--text)">the model doesn't have taste. you do. that's what makes the output good.</p>
   </div>
 
   <!-- 30 · We're early / dot graph -->
@@ -942,7 +953,8 @@
     <div class="eyebrow amber">this window will close</div>
     <h2>more people using it<br>means less advantage<br>for being early.</h2>
     <p class="subtitle step-item" data-step="1" style="margin-top:24px">right now, the constraint of not being able to ship things yourself — that's gone. you can build whatever you want. that is not a permanent state of the world.</p>
-    <p class="subtitle step-item" data-step="2" style="margin-top:20px;color:var(--text)">very few companies will give you access to all these tools and the space to just go try things. this is a genuinely unusual moment. don't waste it.</p>
+    <p class="subtitle step-item" data-step="2" style="margin-top:20px">three weeks ago cursor felt like magic. this week i'm working directly in the terminal and i'm not sure i miss the UI at all. the tools are moving faster than this talk.</p>
+    <p class="subtitle step-item" data-step="2" style="margin-top:16px;color:var(--text)">very few companies will give you access to all these tools and the space to just go try things. don't waste it.</p>
   </div>
 
   <!-- 32 · Discussion -->
@@ -992,14 +1004,19 @@
   <div class="slide centered" data-slide="33">
     <p class="big-quote">"I felt behind.<br>Then I built the thing.<br>Now I feel like I'm<br>just getting started."</p>
     <div class="divider"></div>
-    <p class="subtitle">thanks for listening. ask me anything.</p>
+    <p class="subtitle">just get excited about this. because I am.</p>
   </div>
 
 </div>
 
 <script>
-  const slides = document.querySelectorAll('.slide');
-  const total = slides.length;
+  let slides = document.querySelectorAll('.slide');
+  let total = slides.length;
+
+  function refreshSlides() {
+    slides = document.querySelectorAll('.slide');
+    total = slides.length;
+  }
   let current = 0;
   let currentStep = 0;
 
@@ -1063,6 +1080,17 @@
   // ── grid overview ──
   document.getElementById('grid-btn').addEventListener('click', e => { e.stopPropagation(); openGrid(); });
 
+  function insertBlankSlide(afterIndex) {
+    const allSlides = document.querySelectorAll('.slide');
+    const ref = allSlides[afterIndex];
+    const newSlide = document.createElement('div');
+    newSlide.className = 'slide';
+    ref.parentNode.insertBefore(newSlide, ref.nextSibling);
+    refreshSlides();
+    closeGrid();
+    setTimeout(() => goTo(afterIndex + 1), 260);
+  }
+
   function openGrid() {
     if (document.getElementById('grid-overlay')) return;
     const W = window.innerWidth, H = window.innerHeight;
@@ -1093,6 +1121,14 @@
 
       wrap.appendChild(clone);
       wrap.appendChild(num);
+
+      const ins = document.createElement('button');
+      ins.className = 'thumb-insert';
+      ins.title = 'Insert blank slide after';
+      ins.textContent = '+';
+      ins.addEventListener('click', e => { e.stopPropagation(); insertBlankSlide(i); });
+      wrap.appendChild(ins);
+
       wrap.addEventListener('click', () => { closeGrid(); setTimeout(() => goTo(i), 160); });
       grid.appendChild(wrap);
 
