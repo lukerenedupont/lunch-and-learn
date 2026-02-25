@@ -1143,8 +1143,9 @@
       clip.className = 'thumb-clip';
 
       const clone = slide.cloneNode(true);
-      clone.className = 'thumb-slide';
-      clone.style.cssText = `width:${W}px;height:${H}px;transform:scale(${scale});opacity:1;transition:none`;
+      clone.classList.add('thumb-slide');
+      clone.classList.remove('active');
+      clone.style.cssText = `width:${W}px;height:${H}px;transform:scale(${scale});opacity:1;transition:none;inset:auto`;
       clone.querySelectorAll('.step-item').forEach(el => el.classList.add('visible'));
       clone.querySelectorAll('video').forEach(v => { v.muted = true; v.autoplay = false; });
       clip.appendChild(clone);
