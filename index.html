@@ -461,6 +461,8 @@
 
     .title-letter {
       display: inline-block;
+      overflow: visible;
+      vertical-align: bottom;
       transition: transform 0.07s ease, color 0.05s;
       cursor: default;
     }
@@ -1664,6 +1666,15 @@
         ch === ' ' ? ' ' : `<span class="title-letter">${ch}</span>`
       ).join(''))
       .join('<br>');
+
+    // Lock each letter's dimensions so font changes don't reflow the line
+    requestAnimationFrame(() => {
+      h1.querySelectorAll('.title-letter').forEach(s => {
+        const r = s.getBoundingClientRect();
+        s.style.width  = r.width  + 'px';
+        s.style.height = r.height + 'px';
+      });
+    });
 
     h1.querySelectorAll('.title-letter').forEach(span => {
       let timer = null;
