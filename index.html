@@ -1248,9 +1248,11 @@
   let db = null;
 
   function dbSave(idx) {
-    if (!db || !slideMedia[idx]?.blob) return;
-    const { blob, type, x, y, w, h } = slideMedia[idx];
-    db.transaction('media', 'readwrite').objectStore('media').put({ blob, type, x, y, w, h }, idx);
+    if (!db) return;
+    const items = slideMedia[idx];
+    if (!items?.length) { dbRemove(idx); return; }
+    const storable = items.map(({ blob, type, x, y, w, h }) => ({ blob, type, x, y, w, h }));
+    db.transaction('media', 'readwrite').objectStore('media').put(storable, idx);
   }
 
   function dbRemove(idx) {
@@ -1265,48 +1267,62 @@
     if (!file) return;
     const url = URL.createObjectURL(file);
     const type = file.type.startsWith('video') ? 'video' : 'image';
-    slideMedia[current] = { type, url, blob: file };
-    renderMedia(current);
+    if (!slideMedia[current]) slideMedia[current] = [];
+    const item = { type, url, blob: file };
+    slideMedia[current].push(item);
+    renderMediaItem(current, item);
     dbSave(current);
     mediaInput.value = '';
   });
 
   function renderMedia(idx) {
     const slide = slides[idx];
-    const existing = slide.querySelector('.slide-media');
-    if (existing) existing.remove();
-    const data = slideMedia[idx];
-    if (!data) return;
+    slide.querySelectorAll('.slide-media').forEach(el => el.remove());
+    if (!slideMedia[idx]?.length) return;
+    slideMedia[idx].forEach(item => renderMediaItem(idx, item));
+  }
+
+  function renderMediaItem(idx, item) {
+    const slide = slides[idx];
     slide.querySelector('.blank-hint')?.remove();
 
     const wrap = document.createElement('div');
     wrap.className = 'slide-media';
 
-    if (data.type === 'video') {
+    if (item.type === 'video') {
       const v = document.createElement('video');
-      v.src = data.url; v.autoplay = true; v.loop = true; v.muted = true; v.playsInline = true;
+      v.src = item.url; v.autoplay = true; v.loop = true; v.muted = true; v.playsInline = true;
       wrap.appendChild(v);
     } else {
       const img = document.createElement('img');
-      img.src = data.url;
+      img.src = item.url;
       wrap.appendChild(img);
     }
 
     const rm = document.createElement('button');
     rm.className = 'media-remove'; rm.textContent = '×';
-    rm.addEventListener('click', e => { e.stopPropagation(); delete slideMedia[idx]; dbRemove(idx); wrap.remove(); });
+    rm.addEventListener('click', e => {
+      e.stopPropagation();
+      slideMedia[idx] = slideMedia[idx].filter(i => i !== item);
+      if (!slideMedia[idx].length) delete slideMedia[idx];
+      dbSave(idx);
+      wrap.remove();
+    });
     wrap.appendChild(rm);
 
-    const x = data.x ?? window.innerWidth * 0.54;
-    const y = data.y ?? window.innerHeight * 0.5 - 160;
+    const offset = (slideMedia[idx].indexOf(item)) * 24;
+    const x = item.x ?? (window.innerWidth * 0.54 + offset);
+    const y = item.y ?? (window.innerHeight * 0.5 - 160 + offset);
+    item.x = item.x ?? x;
+    item.y = item.y ?? y;
     wrap.style.left = x + 'px';
     wrap.style.top  = y + 'px';
-    if (data.w) { wrap.style.width = data.w + 'px'; wrap.style.maxWidth = 'none'; }
-    if (data.h) { wrap.style.height = data.h + 'px'; wrap.style.maxHeight = 'none'; }
+    if (item.w) { wrap.style.width = item.w + 'px'; wrap.style.maxWidth = 'none'; }
+    if (item.h) { wrap.style.height = item.h + 'px'; wrap.style.maxHeight = 'none'; }
 
     slide.appendChild(wrap);
-    makeDraggable(wrap, idx);
-    makeResizable(wrap, idx);
+    makeDraggable(wrap, idx, item);
+    makeResizable(wrap, idx, item);
   }
 
   const waffle = document.getElementById('waffle');
@@ -1322,7 +1338,7 @@
     ).join('');
   }
 
-  function makeResizable(el, idx) {
+  function makeResizable(el, idx, item) {
     const handle = document.createElement('div');
     handle.className = 'media-resize';
     el.appendChild(handle);
@@ -1341,7 +1357,7 @@
         const h = Math.round(w * ratio);
         el.style.width = w + 'px'; el.style.height = h + 'px';
         el.style.maxWidth = 'none'; el.style.maxHeight = 'none';
-        slideMedia[idx].w = w; slideMedia[idx].h = h;
+        item.w = w; item.h = h;
       };
       const onUp = () => {
         document.removeEventListener('mousemove', onMove);
@@ -1376,12 +1392,14 @@
     if (!file || (!file.type.startsWith('image/') && !file.type.startsWith('video/'))) return;
     const url = URL.createObjectURL(file);
     const type = file.type.startsWith('video') ? 'video' : 'image';
-    slideMedia[current] = { type, url, blob: file, x: e.clientX - 160, y: e.clientY - 100 };
-    renderMedia(current);
+    if (!slideMedia[current]) slideMedia[current] = [];
+    const item = { type, url, blob: file, x: e.clientX - 160, y: e.clientY - 100 };
+    slideMedia[current].push(item);
+    renderMediaItem(current, item);
     dbSave(current);
   });
 
-  function makeDraggable(el, idx) {
+  function makeDraggable(el, idx, item) {
     el.addEventListener('mousedown', e => {
       if (e.target.closest('.media-remove') || e.target.closest('.media-resize')) return;
       e.preventDefault(); e.stopPropagation();
@@ -1415,8 +1433,8 @@
 
         el.style.left = l + 'px';
         el.style.top  = t + 'px';
-        slideMedia[idx].x = l;
-        slideMedia[idx].y = t;
+        item.x = l;
+        item.y = t;
       };
       const onUp = () => {
         el.classList.remove('dragging');
@@ -1458,7 +1476,8 @@
       const cursor = e.target.result;
       if (!cursor) return;
       const data = cursor.value;
-      slideMedia[cursor.key] = { ...data, url: URL.createObjectURL(data.blob) };
+      const items = Array.isArray(data) ? data : [data];
+      slideMedia[cursor.key] = items.map(d => ({ ...d, url: URL.createObjectURL(d.blob) }));
       renderMedia(cursor.key);
       cursor.continue();
     };
