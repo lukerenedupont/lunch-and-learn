@@ -418,6 +418,23 @@
     #add-btn:hover { background: var(--surface2); color: var(--text); border-color: #444; }
 
     /* ── slide media panel ── */
+    .slide.blank-slide {
+      align-items: center; justify-content: center; cursor: pointer;
+    }
+    .slide.blank-slide .blank-hint {
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      color: var(--border); pointer-events: none; user-select: none;
+      transition: color 0.2s;
+    }
+    .slide.blank-slide:hover .blank-hint { color: var(--muted); }
+    .blank-hint-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      border: 2px dashed currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; line-height: 1;
+    }
+    .blank-hint p { font-size: 13px; letter-spacing: 0.03em; margin: 0; }
+
     .slide-media {
       position: absolute;
       max-width: 44%; max-height: 78%;
@@ -1114,7 +1131,12 @@
     const allSlides = document.querySelectorAll('.slide');
     const ref = allSlides[afterIndex];
     const newSlide = document.createElement('div');
-    newSlide.className = 'slide';
+    newSlide.className = 'slide blank-slide';
+    newSlide.innerHTML = `<div class="blank-hint"><div class="blank-hint-icon">+</div><p>click to add media, or drag &amp; drop</p></div>`;
+    newSlide.addEventListener('click', e => {
+      if (e.target.closest('.slide-media')) return;
+      mediaInput.click();
+    });
     ref.parentNode.insertBefore(newSlide, ref.nextSibling);
     refreshSlides();
     closeGrid();
@@ -1232,6 +1254,7 @@
     if (existing) existing.remove();
     const data = slideMedia[idx];
     if (!data) return;
+    slide.querySelector('.blank-hint')?.remove();
 
     const wrap = document.createElement('div');
     wrap.className = 'slide-media';
