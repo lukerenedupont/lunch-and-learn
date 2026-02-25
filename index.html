@@ -1114,6 +1114,18 @@
   const addBtn = document.getElementById('add-btn');
   const mediaInput = document.getElementById('media-input');
   const slideMedia = {};
+  let db = null;
+
+  function dbSave(idx) {
+    if (!db || !slideMedia[idx]?.blob) return;
+    const { blob, type, x, y, w, h } = slideMedia[idx];
+    db.transaction('media', 'readwrite').objectStore('media').put({ blob, type, x, y, w, h }, idx);
+  }
+
+  function dbRemove(idx) {
+    if (!db) return;
+    db.transaction('media', 'readwrite').objectStore('media').delete(idx);
+  }
 
   addBtn.addEventListener('click', () => mediaInput.click());
 
@@ -1122,8 +1134,9 @@
     if (!file) return;
     const url = URL.createObjectURL(file);
     const type = file.type.startsWith('video') ? 'video' : 'image';
-    slideMedia[current] = { type, url };
+    slideMedia[current] = { type, url, blob: file };
     renderMedia(current);
+    dbSave(current);
     mediaInput.value = '';
   });
 
@@ -1149,7 +1162,7 @@
 
     const rm = document.createElement('button');
     rm.className = 'media-remove'; rm.textContent = '×';
-    rm.addEventListener('click', e => { e.stopPropagation(); delete slideMedia[idx]; wrap.remove(); });
+    rm.addEventListener('click', e => { e.stopPropagation(); delete slideMedia[idx]; dbRemove(idx); wrap.remove(); });
     wrap.appendChild(rm);
 
     const x = data.x ?? window.innerWidth * 0.54;
@@ -1197,6 +1210,7 @@
       const onUp = () => {
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onUp);
+        dbSave(idx);
       };
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
@@ -1226,8 +1240,9 @@
     if (!file || (!file.type.startsWith('image/') && !file.type.startsWith('video/'))) return;
     const url = URL.createObjectURL(file);
     const type = file.type.startsWith('video') ? 'video' : 'image';
-    slideMedia[current] = { type, url, x: e.clientX - 160, y: e.clientY - 100 };
+    slideMedia[current] = { type, url, blob: file, x: e.clientX - 160, y: e.clientY - 100 };
     renderMedia(current);
+    dbSave(current);
   });
 
   function makeDraggable(el, idx) {
@@ -1251,6 +1266,7 @@
         el.classList.remove('dragging');
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onUp);
+        dbSave(idx);
       };
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
@@ -1258,6 +1274,22 @@
   }
 
   updateChrome();
+
+  // persist media across sessions via IndexedDB
+  const dbReq = indexedDB.open('lunch-learn-media', 1);
+  dbReq.onupgradeneeded = e => e.target.result.createObjectStore('media');
+  dbReq.onsuccess = e => {
+    db = e.target.result;
+    const req = db.transaction('media', 'readonly').objectStore('media').openCursor();
+    req.onsuccess = e => {
+      const cursor = e.target.result;
+      if (!cursor) return;
+      const data = cursor.value;
+      slideMedia[cursor.key] = { ...data, url: URL.createObjectURL(data.blob) };
+      renderMedia(cursor.key);
+      cursor.continue();
+    };
+  };
 </script>
 </body>
 </html>
