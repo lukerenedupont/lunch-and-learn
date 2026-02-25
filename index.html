@@ -1123,6 +1123,25 @@
   // ── grid overview ──
   document.getElementById('grid-btn').addEventListener('click', e => { e.stopPropagation(); openGrid(); });
 
+  function makeBlankSlideElement() {
+    const el = document.createElement('div');
+    el.className = 'slide blank-slide';
+    el.innerHTML = `<div class="blank-hint"><div class="blank-hint-icon">+</div><p>click to add media, or drag &amp; drop</p></div>`;
+    el.addEventListener('click', e => {
+      if (e.target.closest('.slide-media')) return;
+      e.stopPropagation();
+      mediaInput.click();
+    });
+    return el;
+  }
+
+  function saveBlankSlides() {
+    const positions = [...document.querySelectorAll('.slide')]
+      .map((s, i) => s.classList.contains('blank-slide') ? i : null)
+      .filter(x => x !== null);
+    localStorage.setItem('blank-slides', JSON.stringify(positions));
+  }
+
   function deleteSlide(index) {
     if (slides.length <= 1) return;
     const allSlides = document.querySelectorAll('.slide');
@@ -1130,6 +1149,7 @@
     dbRemove(index);
     delete slideMedia[index];
     refreshSlides();
+    saveBlankSlides();
     closeGrid();
     setTimeout(() => goTo(Math.min(current, slides.length - 1)), 260);
   }
@@ -1137,16 +1157,10 @@
   function insertBlankSlide(afterIndex) {
     const allSlides = document.querySelectorAll('.slide');
     const ref = allSlides[afterIndex];
-    const newSlide = document.createElement('div');
-    newSlide.className = 'slide blank-slide';
-    newSlide.innerHTML = `<div class="blank-hint"><div class="blank-hint-icon">+</div><p>click to add media, or drag &amp; drop</p></div>`;
-    newSlide.addEventListener('click', e => {
-      if (e.target.closest('.slide-media')) return;
-      e.stopPropagation();
-      mediaInput.click();
-    });
+    const newSlide = makeBlankSlideElement();
     ref.parentNode.insertBefore(newSlide, ref.nextSibling);
     refreshSlides();
+    saveBlankSlides();
     closeGrid();
     setTimeout(() => goTo(afterIndex + 1), 260);
   }
@@ -1415,6 +1429,21 @@
       document.addEventListener('mouseup', onUp);
     });
   }
+
+  // restore blank slides from previous session
+  (function() {
+    const saved = JSON.parse(localStorage.getItem('blank-slides') || '[]');
+    saved.sort((a, b) => a - b).forEach(pos => {
+      const all = document.querySelectorAll('.slide');
+      const newSlide = makeBlankSlideElement();
+      if (pos >= all.length) {
+        all[all.length - 1].parentNode.appendChild(newSlide);
+      } else {
+        all[pos].parentNode.insertBefore(newSlide, all[pos]);
+      }
+    });
+    if (saved.length) refreshSlides();
+  })();
 
   updateChrome();
 
