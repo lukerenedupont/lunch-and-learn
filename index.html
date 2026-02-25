@@ -294,6 +294,19 @@
       padding-left: 12px; margin-bottom: 10px;
     }
 
+    /* ── waffle chart ── */
+    .waffle { display: flex; flex-wrap: wrap; gap: 2px; width: 510px; flex-shrink: 0; align-content: flex-start; }
+    .wd { display: block; width: 8px; height: 8px; border-radius: 1.5px; flex-shrink: 0; }
+    .wn { background: var(--border); }
+    .wf { background: var(--green); opacity: 0.7; }
+    .wp { background: var(--amber); }
+    .wc { background: var(--red); }
+    .waffle-legend { display: flex; flex-direction: column; gap: 12px; margin-top: 32px; }
+    .wl-row { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--muted); }
+    .wl-row .wd { width: 10px; height: 10px; opacity: 1; }
+    .wl-row .wf { opacity: 0.7; }
+    @media (max-width: 768px) { .waffle { display: none; } }
+
     /* ── light mode ── */
     body.light {
       --bg: #f7f7f5;
@@ -573,46 +586,46 @@
   <div class="slide" data-slide="8" data-steps="2">
     <div class="eyebrow muted">card 01</div>
     <h2>Shop Similar</h2>
-    <p class="subtitle" style="margin-top:16px">3×3 shoe grid. tap to focus. shared element transition. on my phone with haptics.</p>
+    <p class="subtitle" style="margin-top:16px">you see a shoe you like in the feed. tap it — the card expands into a 3×3 grid of similar products. tap one and it zooms in with a shared element transition, then drops you to PDP. fully native, on-device, with haptics.</p>
     <div class="chat-wrap step-item" data-step="1" style="margin-top:28px">
       <div class="bubble">
         <span class="who you">you</span>
         "almost. not smooth enough yet. shared transition like an apple ios app"
       </div>
     </div>
-    <p class="subtitle step-item" data-step="2" style="margin-top:20px;color:var(--text)">custom offset/size/opacity animation with iOS-style springs. that one prompt nailed it.</p>
+    <p class="subtitle step-item" data-step="2" style="margin-top:20px;color:var(--text)">custom offset/size/opacity with iOS-style springs. one prompt, completely nailed it.</p>
   </div>
 
   <!-- 10 · Arc Carousel -->
   <div class="slide" data-slide="9" data-steps="2">
     <div class="eyebrow muted">card 02</div>
     <h2>Collection Pocket<br>Arc Carousel</h2>
-    <p class="subtitle" style="margin-top:16px">based on the A24 arc carousel reference. glass effects, product piles peeking out, sorted by color group.</p>
+    <p class="subtitle" style="margin-top:16px">products fanned out in an arc like a deck of cards — based on the A24 design reference. frosted glass card surface, products peeking out behind each other, draggable to cycle through, sorted by color group.</p>
     <div class="chat-wrap step-item" data-step="1" style="margin-top:28px">
       <div class="bubble">
         <span class="who you">you</span>
         "nope this is not what i wanted. go back to the last version"
       </div>
     </div>
-    <p class="subtitle step-item" data-step="2" style="margin-top:20px;color:var(--text)">reverted. tried again. got it. the whole loop was maybe five minutes.</p>
+    <p class="subtitle step-item" data-step="2" style="margin-top:20px;color:var(--text)">reverted, tried again, got it. the whole loop was maybe five minutes. git means you can always go back.</p>
   </div>
 
-  <!-- 11 · Shop the Look + Spin -->
+  <!-- 11 · Shop the Look -->
   <div class="slide" data-slide="10" data-steps="2">
-    <div class="eyebrow muted">cards 03 + 04</div>
-    <h2>Shop the Look<br>+ Spin the Wheel</h2>
-    <div class="cards two" style="margin-top:36px">
-      <div class="card landed step-item" data-step="1">
-        <span class="card-icon">👗</span>
-        <div class="card-title">Shop the Look</div>
-        <div class="card-desc">outfit hero with tappable hotspots. floating product cards. evolved into a swipeable carousel as i kept going.</div>
-      </div>
-      <div class="card landed step-item" data-step="2">
-        <span class="card-icon">🎡</span>
-        <div class="card-title">Spin the Wheel</div>
-        <div class="card-desc">gamified discount card. spin to win. reveal animations, CTA wiring, press feedback, full haptics.</div>
-      </div>
-    </div>
+    <div class="eyebrow muted">card 03</div>
+    <h2>Shop the Look</h2>
+    <p class="subtitle" style="margin-top:16px">outfit hero image with tappable hotspot dots mapped to each product in the photo. tap a dot — a floating product card slides in with name, price, and add to cart.</p>
+    <p class="subtitle step-item" data-step="1" style="margin-top:20px">started simple. kept going. evolved into a swipeable carousel of multiple outfits with a full product rack below and transitions between looks.</p>
+    <p class="subtitle step-item" data-step="2" style="margin-top:16px;color:var(--text)">this one i kept building past where it needed to be. just because it was fun.</p>
+  </div>
+
+  <!-- 12 · Spin the Wheel -->
+  <div class="slide" data-slide="11" data-steps="2">
+    <div class="eyebrow muted">card 04</div>
+    <h2>Spin the Wheel</h2>
+    <p class="subtitle" style="margin-top:16px">gamified discount mechanic. the card shows a prize wheel segmented by discount amounts — you spin it, it decelerates with real physics, locks on a segment with a haptic pulse on each click, then dramatically reveals your discount.</p>
+    <p class="subtitle step-item" data-step="1" style="margin-top:20px">full CTA wiring, press feedback, confetti on reveal. getting the haptic rhythm right took a few passes but it felt incredible when it landed.</p>
+    <p class="subtitle step-item" data-step="2" style="margin-top:16px;color:var(--text)">this is the one that made me realise: the only constraint i had before was not being able to ship things myself.</p>
   </div>
 
   <!-- 12 · Pong -->
@@ -753,7 +766,29 @@
     </div>
   </div>
 
-  <!-- 23 · Directing habits -->
+  <!-- 23 · Cost / Cursor -->
+  <div class="slide" data-slide="22" data-steps="2">
+    <div class="eyebrow muted">something worth knowing</div>
+    <h2>these tools are powerful.<br>they're also expensive.</h2>
+    <p class="subtitle step-item" data-step="1" style="margin-top:24px">i started with Cursor because it had access to a model we didn't have in Claude yet. it made things move incredibly fast. we were also spending thousands of dollars a day. they had to take it away.</p>
+    <p class="subtitle step-item" data-step="2" style="margin-top:20px;color:var(--text)">if you open Vault right now you'll see an AI spend ticker next to your name. it's real money. be intentional about what you're asking it to do.</p>
+  </div>
+
+  <!-- 24 · Plan mode -->
+  <div class="slide" data-slide="23" data-steps="2">
+    <div class="eyebrow muted">the habit that fixed it</div>
+    <h2>spec first.<br>then build.</h2>
+    <div class="chat-wrap" style="margin-top:32px">
+      <div class="bubble">
+        <span class="who you">you</span>
+        "before we do anything, ask me a bunch of clarifying questions so we can nail down exactly what we're building"
+      </div>
+    </div>
+    <p class="subtitle step-item" data-step="1" style="margin-top:24px">more time upfront. way fewer wasted rebuilds. the output is better and you end up with something much closer to what you actually wanted.</p>
+    <p class="subtitle step-item" data-step="2" style="margin-top:16px;color:var(--text)">plan mode in Claude Code does this automatically. i use it for anything non-trivial now.</p>
+  </div>
+
+  <!-- 25 · Directing habits -->
   <div class="slide" data-slide="22" data-steps="3">
     <div class="eyebrow muted">a few habits that changed everything</div>
     <h2>things I wish I'd<br>started earlier.</h2>
@@ -875,7 +910,34 @@
     <p class="subtitle step-item" data-step="2" style="margin-top:20px;color:var(--text)">the model doesn't have taste. you do. that's what makes the output good.</p>
   </div>
 
-  <!-- 30 · Discussion -->
+  <!-- 30 · We're early / dot graph -->
+  <div class="slide" data-slide="29">
+    <div class="eyebrow muted">feb 2026 — 8.1 billion people</div>
+    <h2>it feels like this<br>is everywhere.<br>it really isn't.</h2>
+    <div style="display:flex;align-items:flex-start;gap:56px;margin-top:36px">
+      <div>
+        <div class="waffle-legend">
+          <div class="wl-row"><i class="wd wn"></i>never used AI &mdash; 84%</div>
+          <div class="wl-row"><i class="wd wf"></i>free chatbot user &mdash; 16%</div>
+          <div class="wl-row"><i class="wd wp"></i>pays for AI &mdash; ~0.3%</div>
+          <div class="wl-row"><i class="wd wc"></i>uses coding tools &mdash; ~0.04%</div>
+        </div>
+        <p class="subtitle" style="margin-top:32px">each dot is 3.2 million people.<br><strong style="color:var(--text)">we're in the last row.</strong></p>
+        <p class="subtitle" style="margin-top:16px">we're in an echo chamber. everyone around us is doing this. most of the world isn't even close.</p>
+      </div>
+      <div id="waffle" class="waffle"></div>
+    </div>
+  </div>
+
+  <!-- 31 · The window will close -->
+  <div class="slide" data-slide="30" data-steps="2">
+    <div class="eyebrow amber">this window will close</div>
+    <h2>more people using it<br>means less advantage<br>for being early.</h2>
+    <p class="subtitle step-item" data-step="1" style="margin-top:24px">right now, the constraint of not being able to ship things yourself — that's gone. you can build whatever you want. that is not a permanent state of the world.</p>
+    <p class="subtitle step-item" data-step="2" style="margin-top:20px;color:var(--text)">very few companies will give you access to all these tools and the space to just go try things. this is a genuinely unusual moment. don't waste it.</p>
+  </div>
+
+  <!-- 32 · Discussion -->
   <div class="slide discussion" data-slide="29">
     <div class="discussion-badge">💬 your turn</div>
     <h2>what's something you've<br>been wanting to try<br>but haven't yet?</h2>
@@ -1100,6 +1162,19 @@
     slide.appendChild(wrap);
     makeDraggable(wrap, idx);
     makeResizable(wrap, idx);
+  }
+
+  const waffle = document.getElementById('waffle');
+  if (waffle) {
+    const segments = [
+      { cls: 'wn', count: 2091 },
+      { cls: 'wf', count: 400 },
+      { cls: 'wp', count: 8 },
+      { cls: 'wc', count: 1 },
+    ];
+    waffle.innerHTML = segments.flatMap(({ cls, count }) =>
+      Array(count).fill(`<i class="wd ${cls}"></i>`)
+    ).join('');
   }
 
   function makeResizable(el, idx) {
