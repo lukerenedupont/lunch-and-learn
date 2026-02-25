@@ -443,6 +443,13 @@
       z-index: 10; cursor: grab; user-select: none;
     }
     .slide-media.dragging { cursor: grabbing; box-shadow: 0 32px 80px rgba(0,0,0,0.75); }
+    .snap-guide {
+      position: fixed; pointer-events: none; z-index: 9999;
+      background: #60a5fa; opacity: 0; transition: opacity 0.08s;
+    }
+    .snap-guide.h { left: 0; right: 0; height: 1px; top: 50%; }
+    .snap-guide.v { top: 0; bottom: 0; width: 1px; left: 50%; }
+    .snap-guide.visible { opacity: 1; }
     .slide-media img, .slide-media video {
       width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none;
     }
@@ -1361,16 +1368,36 @@
 
   function makeDraggable(el, idx) {
     el.addEventListener('mousedown', e => {
-      if (e.target.closest('.media-remove')) return;
+      if (e.target.closest('.media-remove') || e.target.closest('.media-resize')) return;
       e.preventDefault(); e.stopPropagation();
 
       const startX = e.clientX, startY = e.clientY;
       const startL = parseFloat(el.style.left), startT = parseFloat(el.style.top);
       el.classList.add('dragging');
 
+      const guideH = document.createElement('div');
+      guideH.className = 'snap-guide h';
+      const guideV = document.createElement('div');
+      guideV.className = 'snap-guide v';
+      document.body.appendChild(guideH);
+      document.body.appendChild(guideV);
+
+      const SNAP = 8;
+      const CX = window.innerWidth / 2, CY = window.innerHeight / 2;
+
       const onMove = e => {
-        const l = startL + (e.clientX - startX);
-        const t = startT + (e.clientY - startY);
+        let l = startL + (e.clientX - startX);
+        let t = startT + (e.clientY - startY);
+
+        const cx = l + el.offsetWidth / 2;
+        const cy = t + el.offsetHeight / 2;
+
+        if (Math.abs(cx - CX) < SNAP) { l = CX - el.offsetWidth / 2; guideV.classList.add('visible'); }
+        else { guideV.classList.remove('visible'); }
+
+        if (Math.abs(cy - CY) < SNAP) { t = CY - el.offsetHeight / 2; guideH.classList.add('visible'); }
+        else { guideH.classList.remove('visible'); }
+
         el.style.left = l + 'px';
         el.style.top  = t + 'px';
         slideMedia[idx].x = l;
@@ -1378,6 +1405,8 @@
       };
       const onUp = () => {
         el.classList.remove('dragging');
+        guideH.remove();
+        guideV.remove();
         document.removeEventListener('mousemove', onMove);
         document.removeEventListener('mouseup', onUp);
         dbSave(idx);
