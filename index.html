@@ -459,6 +459,16 @@
     body.pen-mode .slide-media { pointer-events: none; }
     #pen-btn.pen-active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+    .title-letter {
+      display: inline-block;
+      transition: transform 0.07s ease, color 0.05s;
+      cursor: default;
+    }
+    .title-letter.lifted {
+      transform: translateY(-8px) scale(1.18);
+      color: var(--accent);
+    }
+
     [contenteditable="true"] {
       outline: none; cursor: text;
       border-radius: 4px;
@@ -1618,6 +1628,63 @@
   drawCanvas.addEventListener('mouseleave', () => { drawing = false; });
 
   loadCanvasSlide(0);
+
+  // ── title letter font scramble ──
+  (function() {
+    const h1 = slides[0].querySelector('h1');
+    if (!h1) return;
+
+    const FONTS = [
+      '"Times New Roman", serif',
+      '"Courier New", monospace',
+      'Georgia, serif',
+      'Impact, sans-serif',
+      '"Comic Sans MS", cursive',
+      'Verdana, sans-serif',
+      'Palatino, serif',
+      '"Trebuchet MS", sans-serif',
+      '"Brush Script MT", cursive',
+      '"Lucida Console", monospace',
+      '"Arial Black", sans-serif',
+      'Garamond, serif',
+      '"Baskerville", serif',
+      '"Copperplate", fantasy',
+      'fantasy',
+      'cursive',
+      '"Gill Sans", sans-serif',
+      '"Rockwell", serif',
+      '"American Typewriter", serif',
+      '"Optima", sans-serif',
+    ];
+
+    h1.innerHTML = h1.innerHTML
+      .replace(/(<br\s*\/?>)/gi, '§§')
+      .split('§§')
+      .map(seg => seg.split('').map(ch =>
+        ch === ' ' ? ' ' : `<span class="title-letter">${ch}</span>`
+      ).join(''))
+      .join('<br>');
+
+    h1.querySelectorAll('.title-letter').forEach(span => {
+      let timer = null;
+
+      span.addEventListener('mouseenter', () => {
+        span.classList.add('lifted');
+        const cycle = () => {
+          span.style.fontFamily = FONTS[Math.floor(Math.random() * FONTS.length)];
+          timer = setTimeout(cycle, 45 + Math.random() * 35);
+        };
+        cycle();
+      });
+
+      span.addEventListener('mouseleave', () => {
+        span.classList.remove('lifted');
+        clearTimeout(timer);
+        timer = null;
+        span.style.fontFamily = '';
+      });
+    });
+  })();
 </script>
 </body>
 </html>
