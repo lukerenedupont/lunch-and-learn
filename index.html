@@ -452,6 +452,13 @@
     .snap-guide.h { left: 0; right: 0; height: 1px; top: 50%; }
     .snap-guide.v { top: 0; bottom: 0; width: 1px; left: 50%; }
     .snap-guide.visible { opacity: 1; }
+
+    [contenteditable="true"] {
+      outline: none; cursor: text;
+      border-radius: 4px;
+      box-shadow: 0 0 0 2px rgba(96,165,250,0.5);
+      caret-color: #60a5fa;
+    }
     .slide-media img, .slide-media video {
       width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none;
     }
@@ -1463,6 +1470,48 @@
     });
     if (saved.length) refreshSlides();
   })();
+
+  // ── inline text editing ──
+  const EDITABLE = 'h1, h2, h3, h4, p, .eyebrow, .chapter-title, .chapter-sub, .big-quote, .card-title, .card-desc';
+
+  function tagEditables() {
+    let i = 0;
+    document.querySelectorAll('#deck ' + EDITABLE).forEach(el => {
+      if (!el.dataset.eid) el.dataset.eid = 'e' + (i++);
+    });
+  }
+
+  function saveTextEdit(eid, html) {
+    const edits = JSON.parse(localStorage.getItem('slide-text-edits') || '{}');
+    edits[eid] = html;
+    localStorage.setItem('slide-text-edits', JSON.stringify(edits));
+  }
+
+  function restoreTextEdits() {
+    const edits = JSON.parse(localStorage.getItem('slide-text-edits') || '{}');
+    Object.entries(edits).forEach(([eid, html]) => {
+      const el = document.querySelector(`[data-eid="${eid}"]`);
+      if (el) el.innerHTML = html;
+    });
+  }
+
+  document.getElementById('deck').addEventListener('click', e => {
+    const el = e.target.closest(EDITABLE);
+    if (!el || !el.closest('.slide') || el.isContentEditable) return;
+    e.stopPropagation();
+    el.contentEditable = 'true';
+    el.focus();
+    el.addEventListener('blur', () => {
+      el.contentEditable = 'false';
+      if (el.dataset.eid) saveTextEdit(el.dataset.eid, el.innerHTML);
+    }, { once: true });
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { e.preventDefault(); el.blur(); }
+    }, { once: true });
+  });
+
+  tagEditables();
+  restoreTextEdits();
 
   updateChrome();
 
