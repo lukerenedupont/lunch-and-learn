@@ -347,7 +347,7 @@
       padding: 52px; justify-content: center; align-content: flex-start;
     }
     .thumb-wrap {
-      position: relative; border-radius: 10px; overflow: hidden;
+      position: relative; border-radius: 10px; overflow: visible;
       cursor: pointer; border: 2px solid transparent; flex-shrink: 0;
       opacity: 0; transform: scale(0.86) translateY(8px);
       transition: opacity 0.3s cubic-bezier(0.34,1.56,0.64,1),
@@ -358,6 +358,7 @@
     .thumb-wrap.thumb-current { border-color: var(--accent); }
     .thumb-wrap:hover:not(.thumb-current) { border-color: rgba(255,255,255,0.22); }
     body.light .thumb-wrap:hover:not(.thumb-current) { border-color: rgba(0,0,0,0.22); }
+    .thumb-clip { position: absolute; inset: 0; border-radius: 8px; overflow: hidden; }
     .thumb-slide { position: absolute; top: 0; left: 0; transform-origin: top left; pointer-events: none; background: var(--bg); }
     .thumb-num {
       position: absolute; bottom: 5px; right: 7px;
@@ -367,12 +368,21 @@
     }
     body.light .thumb-num { color: rgba(0,0,0,0.28); }
     .thumb-insert {
-      position: absolute; right: -11px; top: 50%; transform: translateY(-50%);
-      width: 22px; height: 22px; border-radius: 50%;
-      background: var(--accent); border: none; color: #fff;
-      font-size: 16px; line-height: 1; padding: 0;
-      cursor: pointer; opacity: 0; transition: opacity 0.15s; z-index: 20;
+      position: absolute; right: -7px; top: 0; bottom: 0; width: 14px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: none; border: none; padding: 0;
+      cursor: pointer; opacity: 0; transition: opacity 0.15s; z-index: 200;
+    }
+    .thumb-insert::before {
+      content: ''; position: absolute; top: 0; bottom: 0; left: 50%;
+      transform: translateX(-50%); width: 2px;
+      background: var(--accent); border-radius: 1px;
+    }
+    .ins-dot {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: var(--accent); color: #fff; font-size: 17px; line-height: 1;
       display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 1; pointer-events: none;
     }
     .thumb-wrap:hover .thumb-insert { opacity: 1; }
 
@@ -1109,23 +1119,27 @@
       wrap.className = 'thumb-wrap' + (i === current ? ' thumb-current' : '');
       wrap.style.cssText = `width:${thumbW}px;height:${thumbH}px`;
 
+      const clip = document.createElement('div');
+      clip.className = 'thumb-clip';
+
       const clone = slide.cloneNode(true);
       clone.className = 'thumb-slide';
       clone.style.cssText = `width:${W}px;height:${H}px;transform:scale(${scale});opacity:1;transition:none`;
       clone.querySelectorAll('.step-item').forEach(el => el.classList.add('visible'));
       clone.querySelectorAll('video').forEach(v => { v.muted = true; v.autoplay = false; });
+      clip.appendChild(clone);
 
       const num = document.createElement('div');
       num.className = 'thumb-num';
       num.textContent = i + 1;
 
-      wrap.appendChild(clone);
+      wrap.appendChild(clip);
       wrap.appendChild(num);
 
       const ins = document.createElement('button');
       ins.className = 'thumb-insert';
       ins.title = 'Insert blank slide after';
-      ins.textContent = '+';
+      ins.innerHTML = '<span class="ins-dot">+</span>';
       ins.addEventListener('click', e => { e.stopPropagation(); insertBlankSlide(i); });
       wrap.appendChild(ins);
 
