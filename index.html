@@ -385,6 +385,15 @@
       position: relative; z-index: 1; pointer-events: none;
     }
     .thumb-wrap:hover .thumb-insert { opacity: 1; }
+    .thumb-delete {
+      position: absolute; top: -6px; right: -6px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--red); border: none; color: #fff;
+      font-size: 13px; line-height: 1; padding: 0;
+      cursor: pointer; opacity: 0; transition: opacity 0.15s; z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .thumb-wrap:hover .thumb-delete { opacity: 1; }
 
     /* ── theme toggle ── */
     #theme-btn {
@@ -1090,6 +1099,17 @@
   // ── grid overview ──
   document.getElementById('grid-btn').addEventListener('click', e => { e.stopPropagation(); openGrid(); });
 
+  function deleteSlide(index) {
+    if (slides.length <= 1) return;
+    const allSlides = document.querySelectorAll('.slide');
+    allSlides[index].remove();
+    dbRemove(index);
+    delete slideMedia[index];
+    refreshSlides();
+    closeGrid();
+    setTimeout(() => goTo(Math.min(current, slides.length - 1)), 260);
+  }
+
   function insertBlankSlide(afterIndex) {
     const allSlides = document.querySelectorAll('.slide');
     const ref = allSlides[afterIndex];
@@ -1142,6 +1162,13 @@
       ins.innerHTML = '<span class="ins-dot">+</span>';
       ins.addEventListener('click', e => { e.stopPropagation(); insertBlankSlide(i); });
       wrap.appendChild(ins);
+
+      const del = document.createElement('button');
+      del.className = 'thumb-delete';
+      del.title = 'Delete slide';
+      del.textContent = '×';
+      del.addEventListener('click', e => { e.stopPropagation(); deleteSlide(i); });
+      wrap.appendChild(del);
 
       wrap.addEventListener('click', () => { closeGrid(); setTimeout(() => goTo(i), 160); });
       grid.appendChild(wrap);
