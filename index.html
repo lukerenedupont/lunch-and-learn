@@ -1135,6 +1135,7 @@
     newSlide.innerHTML = `<div class="blank-hint"><div class="blank-hint-icon">+</div><p>click to add media, or drag &amp; drop</p></div>`;
     newSlide.addEventListener('click', e => {
       if (e.target.closest('.slide-media')) return;
+      e.stopPropagation();
       mediaInput.click();
     });
     ref.parentNode.insertBefore(newSlide, ref.nextSibling);
@@ -1214,7 +1215,7 @@
   }
 
   document.addEventListener('click', e => {
-    if (e.target.closest('#add-btn') || e.target.closest('#theme-btn') || e.target.closest('#grid-btn') || e.target.closest('.slide-media')) return;
+    if (e.target.closest('#add-btn') || e.target.closest('#theme-btn') || e.target.closest('#grid-btn') || e.target.closest('.slide-media') || e.target.closest('.blank-slide')) return;
     e.clientX > window.innerWidth / 2 ? advance() : retreat();
   });
 
