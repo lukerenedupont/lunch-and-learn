@@ -503,6 +503,16 @@
       opacity: 0; transition: opacity 0.2s;
     }
     .slide-media:hover .media-resize::after { opacity: 1; }
+    .slide-media.selected { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .media-layer-badge {
+      position: absolute; bottom: 8px; left: 8px;
+      background: rgba(0,0,0,0.75); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 4px; padding: 3px 8px;
+      font-size: 10px; font-weight: 600; color: #fff;
+      letter-spacing: 0.06em; opacity: 0;
+      transition: opacity 0.15s; pointer-events: none;
+    }
+    .slide-media.selected .media-layer-badge { opacity: 1; }
 
     /* ── drop overlay ── */
     #drop-overlay {
@@ -516,6 +526,36 @@
       opacity: 0; transition: opacity 0.15s;
     }
     #drop-overlay.visible { opacity: 1; }
+
+    /* ── speaker notes ── */
+    #notes-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 20px 40px; z-index: 80;
+      max-height: 30vh; overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.25s ease;
+    }
+    #notes-bar.visible { transform: translateY(0); }
+    #notes-bar .notes-label {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: #555; margin-bottom: 10px;
+    }
+    #notes-bar .notes-text {
+      font-size: 15px; line-height: 1.7; color: #ccc;
+    }
+    #notes-bar .notes-text strong { color: #f0f0f0; }
+    #notes-bar .notes-key { display: inline-block; padding: 1px 6px; border: 1px solid #333; border-radius: 3px; font-size: 10px; color: #555; margin-left: 6px; }
+    body.light #notes-bar {
+      background: rgba(255,255,255,0.94);
+      border-top-color: rgba(0,0,0,0.08);
+    }
+    body.light #notes-bar .notes-label { color: #999; }
+    body.light #notes-bar .notes-text { color: #555; }
+    body.light #notes-bar .notes-text strong { color: #111; }
 
     /* ── mobile ── */
     @media (max-width: 768px) {
@@ -554,7 +594,7 @@
 <body>
 
 <div id="progress"></div>
-<div id="counter">1 / 33</div>
+<div id="counter">1 / 39</div>
 <button id="grid-btn" title="Slide overview"><span class="grid-icon"><span></span><span></span><span></span><span></span></span></button>
 <button id="theme-btn" title="Toggle light mode">◑</button>
 <button id="add-btn" title="Add image or video to this slide">+</button>
@@ -567,25 +607,29 @@
   <button class="nav-arrow" id="clear-btn" title="Clear drawing on this slide" style="display:none">⌫</button>
 </div>
 <canvas id="draw-canvas"></canvas>
+<div id="notes-bar">
+  <div class="notes-label">Speaker Notes (N to toggle)</div>
+  <div class="notes-text" id="notes-text"></div>
+</div>
 
 <div id="deck">
 
   <!-- 1 · Title -->
-  <div class="slide active" data-slide="0">
+  <div class="slide active" data-slide="0" data-notes="<strong>Set the tone — casual, honest.</strong> Quick intro: this is about what happened when I actually tried building things with AI tools instead of just using them. Two years of playing around, one real project that changed everything.">
     <div class="eyebrow muted">Lunch &amp; Learn — Feb 2026</div>
     <h1>I Finally<br>Built the<br>Thing.</h1>
-    <p class="subtitle">two years of using AI tools. one real project. here's what happened.</p>
+    <p class="subtitle">two years of using AI tools. one real project. here's what actually happened.</p>
   </div>
 
   <!-- 2 · Confession -->
-  <div class="slide" data-slide="1">
+  <div class="slide" data-slide="1" data-notes="<strong>Be honest here.</strong> Let the quote sit. Everyone in the room has felt this. Pause after 'nothing I could actually ship.' Let them nod.">
     <p class="big-quote">"for two years I was using AI.<br>I wasn't actually<br>building anything."</p>
     <div class="divider"></div>
     <p class="subtitle">good ideas. great figma files. nothing i could actually ship.</p>
   </div>
 
   <!-- 3 · The gap -->
-  <div class="slide" data-slide="2" data-steps="2">
+  <div class="slide" data-slide="2" data-steps="2" data-notes="Walk through the tags — these are all things I was doing. They felt productive. Then reveal the red tag: nothing shipped. Pause. Then the subtitle: I was watching other people build real things.">
     <div class="eyebrow muted">what i was doing</div>
     <h2>using it.<br>not building with it.</h2>
     <div class="tags" style="margin-top:32px">
@@ -599,7 +643,7 @@
   </div>
 
   <!-- 4 · Catalyst -->
-  <div class="slide" data-slide="3" data-steps="2">
+  <div class="slide" data-slide="3" data-steps="2" data-notes="<strong>The turning point.</strong> The home feed project. Interactive card explorations. Ideas that had been sitting in Figma for months. This was the push — a real brief, real stakes.">
     <div class="eyebrow amber">what changed</div>
     <h2>a real project landed<br>and I had no excuse<br>not to try.</h2>
     <p class="subtitle step-item" data-step="1" style="margin-top:24px">rethinking the home feed. new interactive card models. ideas that had been sitting in figma for months.</p>
@@ -607,7 +651,7 @@
   </div>
 
   <!-- 5 · Everything at a glance -->
-  <div class="slide" data-slide="4">
+  <div class="slide" data-slide="4" data-notes="<strong>Quick overview.</strong> Point at the colors: purple = shipped, amber = side projects, red = killed. About two weeks of work total. 'Let me show you' — transition into the demos chapter.">
     <div class="eyebrow muted">about two weeks later</div>
     <h2>here's what I built.</h2>
     <div class="pill-grid" style="margin-top:36px">
@@ -616,10 +660,8 @@
       <span class="pill landed">Shop the Look</span>
       <span class="pill landed">Spin the Wheel</span>
       <span class="pill landed">Pong card</span>
-      <span class="pill side">Motion Parse tool</span>
       <span class="pill side">this presentation</span>
-      <span class="pill killed">scratch cards (rip)</span>
-      <span class="pill killed">music stack (rip)</span>
+      <span class="pill side">design studio tracker</span>
     </div>
     <p class="subtitle" style="margin-top:28px">let me show you.</p>
   </div>
@@ -627,23 +669,23 @@
   <!-- ═══ CHAPTER 01 ═══ -->
 
   <!-- 6 · Chapter break -->
-  <div class="slide chapter" data-slide="5">
+  <div class="slide chapter" data-slide="5" data-notes="Chapter break. Let the room reset. Quick breath.">
     <div class="chapter-num">01 —</div>
     <div class="chapter-line"></div>
     <div class="chapter-title">the work.</div>
     <p class="chapter-sub">five cards, two side projects, zero swift experience.</p>
   </div>
   <!-- 7 · Why code, not Figma -->
-  <div class="slide" data-slide="6" data-steps="2">
+  <div class="slide" data-slide="6" data-steps="2" data-notes="<strong>Important framing.</strong> This isn't anti-Figma. It's about the right tool for the question. When the question is 'how does this feel?' — code is the only way to answer it. That made this the perfect project to try.">
     <div class="eyebrow muted">why not figma</div>
     <h2>i'm faster in figma.<br>except when the question<br>is how something <em>feels</em>.</h2>
-    <p class="subtitle step-item" data-step="1" style="margin-top:24px">the prompt was about interactivity — rethinking how cards respond, move, behave. figma can sketch that. but it can't answer it.</p>
+    <p class="subtitle step-item" data-step="1" style="margin-top:24px">the brief was about interactivity — rethinking how cards respond, move, behave. figma can sketch that. but it can't answer it.</p>
     <p class="subtitle step-item" data-step="2" style="margin-top:16px;color:var(--text)">code can. and that made this the perfect project to finally just dive in.</p>
   </div>
 
 
   <!-- 8 · Day one -->
-  <div class="slide" data-slide="7" data-steps="2">
+  <div class="slide" data-slide="7" data-steps="2" data-notes="<strong>The magic moment.</strong> Figma URL → running SwiftUI in one session. Still don't know Swift. Emphasize the workflow: describe, look at it, redirect. That's it.">
     <div class="eyebrow muted">day one</div>
     <h2>figma URL →<br>running SwiftUI app.<br>one session.</h2>
     <p class="subtitle step-item" data-step="1" style="margin-top:24px">header, search bar, filter chips, frosted glass effects, design tokens. all matched to the figma specs. i still don't know any swift.</p>
@@ -651,7 +693,7 @@
   </div>
 
   <!-- 9 · Not writing code -->
-  <div class="slide" data-slide="8">
+  <div class="slide" data-slide="8" data-notes="Let the chat bubbles speak for themselves. These are real prompts — plain English, not code. The point: you don't need to know the language, you need to know what you want.">
     <h2>not writing code.<br>just <em>describing</em><br>what I wanted.</h2>
     <div class="chat-wrap" style="margin-top:36px">
       <div class="bubble">
@@ -670,10 +712,10 @@
   </div>
 
   <!-- 10 · Shop Similar -->
-  <div class="slide" data-slide="9" data-steps="2">
+  <div class="slide" data-slide="9" data-steps="2" data-notes="<strong>Card 1.</strong> Show the video if you have it. Key detail: the shared element transition — one prompt to get iOS-style springs, custom offset/opacity. Completely nailed it.">
     <div class="eyebrow muted">card 01</div>
     <h2>Shop Similar</h2>
-    <p class="subtitle" style="margin-top:16px">you see a shoe you like in the feed. tap it — the card expands into a 3×3 grid of similar products. tap one and it zooms in with a shared element transition, then drops you to PDP. fully native, on-device, with haptics.</p>
+    <p class="subtitle" style="margin-top:16px">tap a product in the feed — the card fans into a 3×3 grid of similar items. tap one and it zooms in with a shared element transition, drops you to PDP. fully native, with haptics.</p>
     <div class="chat-wrap step-item" data-step="1" style="margin-top:28px">
       <div class="bubble">
         <span class="who you">you</span>
@@ -684,10 +726,10 @@
   </div>
 
   <!-- 11 · Arc Carousel -->
-  <div class="slide" data-slide="10" data-steps="2">
+  <div class="slide" data-slide="10" data-steps="2" data-notes="<strong>Card 2.</strong> Based on the A24 design reference. Key story: it went wrong, said 'go back,' reverted, tried again, got it in 5 minutes. Git means you can always go back.">
     <div class="eyebrow muted">card 02</div>
     <h2>Collection Pocket<br>Arc Carousel</h2>
-    <p class="subtitle" style="margin-top:16px">products fanned out in an arc like a deck of cards — based on the A24 design reference. frosted glass card surface, products peeking out behind each other, draggable to cycle through, sorted by color group.</p>
+    <p class="subtitle" style="margin-top:16px">products fanned out in an arc like a hand of cards — based on the A24 design reference. frosted glass, peek-behind layering, draggable cycling, color-grouped.</p>
     <div class="chat-wrap step-item" data-step="1" style="margin-top:28px">
       <div class="bubble">
         <span class="who you">you</span>
@@ -698,7 +740,7 @@
   </div>
 
   <!-- 12 · Shop the Look -->
-  <div class="slide" data-slide="11" data-steps="2">
+  <div class="slide" data-slide="11" data-steps="2" data-notes="<strong>Card 3.</strong> Started simple with hotspot dots, kept building. Evolved into multi-outfit carousel. The takeaway: kept going past where it needed to be, just because it was fun. That's the energy.">
     <div class="eyebrow muted">card 03</div>
     <h2>Shop the Look</h2>
     <p class="subtitle" style="margin-top:16px">outfit hero image with tappable hotspot dots mapped to each product in the photo. tap a dot — a floating product card slides in with name, price, and add to cart.</p>
@@ -707,16 +749,16 @@
   </div>
 
   <!-- 13 · Spin the Wheel -->
-  <div class="slide" data-slide="12" data-steps="2">
+  <div class="slide" data-slide="12" data-steps="2" data-notes="<strong>Card 4.</strong> The one with the best 'feel.' Haptic rhythm on each wheel segment click. Confetti on reveal. This card made me realize: the only constraint I had before was not being able to ship.">
     <div class="eyebrow muted">card 04</div>
     <h2>Spin the Wheel</h2>
-    <p class="subtitle" style="margin-top:16px">gamified discount mechanic. the card shows a prize wheel segmented by discount amounts — you spin it, it decelerates with real physics, locks on a segment with a haptic pulse on each click, then dramatically reveals your discount.</p>
+    <p class="subtitle" style="margin-top:16px">gamified discount mechanic. prize wheel — spin it, real physics deceleration, haptic pulse on each segment click, dramatic reveal. the kind of thing you can only evaluate by feeling it.</p>
     <p class="subtitle step-item" data-step="1" style="margin-top:20px">full CTA wiring, press feedback, confetti on reveal. getting the haptic rhythm right took a few passes but it felt incredible when it landed.</p>
     <p class="subtitle step-item" data-step="2" style="margin-top:16px;color:var(--text)">this is the one that made me realise: the only constraint i had before was not being able to ship things myself.</p>
   </div>
 
   <!-- 14 · Pong -->
-  <div class="slide" data-slide="13" data-steps="2">
+  <div class="slide" data-slide="13" data-steps="2" data-notes="<strong>Card 5 — the wildcard.</strong> A full Breakout game in a feed card. It worked great… until it didn't. Tease the debugging story that comes later in chapter 3.">
     <div class="eyebrow muted">card 05 — the wildcard</div>
     <h2>a full Breakout game<br>embedded in a feed card.</h2>
     <p class="subtitle step-item" data-step="1" style="margin-top:24px">paddle, ball, head-cutout bricks, prize product reveal when you clear all the blocks.</p>
@@ -724,7 +766,7 @@
   </div>
 
   <!-- 15 · Live Demo -->
-  <div class="slide demo" data-slide="14">
+  <div class="slide demo" data-slide="14" data-notes="<strong>DEMO TIME.</strong> Pass the phone around. Let people feel the haptics. This is the moment that sells it — Figma prototypes lag, this feels real. Give people time with it.">
     <div class="demo-badge"><span class="pulse"></span>Live Demo</div>
     <h2>pass it around.<br>let them feel the haptics.</h2>
     <p class="subtitle" style="margin-top:20px">figma prototypes are great but they lag. this just feels like an actual app.</p>
@@ -732,88 +774,34 @@
     <p class="subtitle" style="color:var(--amber)">accelerometers. gesture physics. native scroll inertia. all out of the box, just from building in the real framework.</p>
   </div>
 
-  <!-- 16 · Motion Parse -->
-  <div class="slide" data-slide="15" data-steps="2">
+  <!-- 16 · This presentation -->
+  <div class="slide" data-slide="15" data-notes="<strong>Meta moment.</strong> This presentation is also something I built with these tools. Single HTML file, all the features. The tool builds its own showcase. Get a smile from the room.">
     <div class="eyebrow amber">side project 01</div>
-    <h2>I needed a tool<br>so I just built one.</h2>
-    <p class="subtitle step-item" data-step="1" style="margin-top:24px"><strong style="color:var(--text)">Motion Parse:</strong> takes a screen recording, extracts frames with ffmpeg, uses Claude's vision API to generate motion specs and replication code. Next.js app, deployed while waiting for Xcode to compile.</p>
-    <p class="subtitle step-item" data-step="2" style="margin-top:16px;color:var(--text)">tip: always have a second project running. main project is compiling. second project is moving.</p>
-  </div>
-
-  <!-- 17 · This presentation -->
-  <div class="slide" data-slide="16">
-    <div class="eyebrow amber">side project 02</div>
     <h2>this presentation<br>is also one of the<br>things I built.</h2>
     <div class="divider"></div>
     <p class="subtitle">single HTML file. keyboard navigation, slide grid overview, drag-and-drop media, light/dark mode. built with Claude Code in a few sessions.</p>
     <p class="subtitle" style="margin-top:16px;color:var(--text)">the tool builds its own showcase.</p>
   </div>
 
+  <!-- 18 · Design Studio tracker -->
+  <div class="slide" data-slide="17" data-steps="2" data-notes="<strong>Side project 3.</strong> Built on the side while other things were compiling. A real personal use case — tracking books and decor for the design studio. Quick build, immediately useful. The point: these tools let you scratch your own itches without breaking stride.">
+    <div class="eyebrow amber">side project 02</div>
+    <h2>needed to track<br>everything I was<br>ordering for the studio.</h2>
+    <p class="subtitle step-item" data-step="1" style="margin-top:24px">books, decor, furniture — all going to different places. built a site to collect and track it all. done on the side while other things were running.</p>
+    <p class="subtitle step-item" data-step="2" style="margin-top:16px;color:var(--text)">not every project has to be ambitious. sometimes you just need a thing and you build it in an afternoon.</p>
+  </div>
+
   <!-- ═══ CHAPTER 02 ═══ -->
 
-  <!-- 18 · Chapter break -->
-  <div class="slide chapter" data-slide="17">
+  <div class="slide chapter" data-slide="18" data-notes="Chapter 2 — the 'how.' This is the practical part people will remember.">
     <div class="chapter-num">02 —</div>
-    <div class="chapter-line"></div>
-    <div class="chapter-title">what I<br>killed.</div>
-    <p class="chapter-sub">two cards i spent real time on and then just deleted.</p>
-  </div>
-
-  <!-- 19 · Scratch cards -->
-  <div class="slide" data-slide="18" data-steps="2">
-    <div class="eyebrow red">rip — scratch card</div>
-    <h2>canvas drawing, blend modes,<br>auto-reveal threshold.</h2>
-    <p class="subtitle step-item" data-step="1" style="margin-top:24px">long back-and-forth on clipping, sizing, blue edges bleeding everywhere.</p>
-    <div class="chat-wrap step-item" data-step="2">
-      <div class="bubble">
-        <span class="who you">you</span>
-        "its still full width"
-      </div>
-      <div class="bubble">
-        <span class="who you">you</span>
-        "these blue edges are sticking out"
-      </div>
-      <div class="bubble">
-        <span class="who you">you</span>
-        "ok, i think the scratch cards are over complicating this. can we just go back to simple cards"
-      </div>
-    </div>
-  </div>
-
-  <!-- 20 · Music stack -->
-  <div class="slide" data-slide="19" data-steps="2">
-    <div class="eyebrow red">rip — music stack card</div>
-    <h2>108 frame screenshots<br>from one animation.</h2>
-    <p class="subtitle step-item" data-step="1" style="margin-top:24px">3D stacked album card with perspective, track strips, drag scrolling. visibility issues. stale builds. just didn't land.</p>
-    <div class="chat-wrap step-item" data-step="2">
-      <div class="bubble">
-        <span class="who you">you</span>
-        "remove this card. it does not work"
-      </div>
-    </div>
-  </div>
-
-  <!-- 21 · Kill fast -->
-  <div class="slide" data-slide="20" data-steps="1">
-    <h2>the scratch card took<br>way too long to kill.</h2>
-    <div class="divider"></div>
-    <p class="subtitle">the music stack got one shot. wrong, cut it. that's the whole difference.</p>
-    <p class="subtitle" style="margin-top:20px">trying ambitious things is the whole point. killing them fast when they're not working is the other part.</p>
-    <p class="subtitle step-item" data-step="1" style="margin-top:24px;color:var(--text)">i'm showing you the failures because that's how we all actually learn. hopefully someone in this room knows how to make the scratch card work — and will tell me after.</p>
-  </div>
-
-  <!-- ═══ CHAPTER 03 ═══ -->
-
-  <!-- 22 · Chapter break -->
-  <div class="slide chapter" data-slide="21">
-    <div class="chapter-num">03 —</div>
     <div class="chapter-line"></div>
     <div class="chapter-title">how I<br>got here.</div>
     <p class="chapter-sub">the way i was prompting changed a lot over three weeks.</p>
   </div>
 
   <!-- 23 · Evolution grid -->
-  <div class="slide" data-slide="22" data-steps="3">
+  <div class="slide" data-slide="22" data-steps="3" data-notes="<strong>The arc.</strong> Reveal each column one at a time. Week 1: reacting — 'build me this, I'll tell you what's wrong.' Week 2: directing — giving references and assets. Week 3: owning — thinking together. Let the audience see themselves in week 1.">
     <div class="eyebrow muted">something i noticed looking back</div>
     <h2>reacting → directing<br>→ owning.</h2>
     <div class="evolution" style="margin-top:36px">
@@ -836,7 +824,7 @@
   </div>
 
   <!-- 24 · Prompt comparison -->
-  <div class="slide" data-slide="23">
+  <div class="slide" data-slide="23" data-notes="<strong>Concrete evidence.</strong> Left column: vague, reactive. Right column: specific, strategic. The prompts literally tell the story of how your skill evolves. Don't belabor — let the comparison speak for itself.">
     <div class="eyebrow muted">what that actually looked like</div>
     <h2>the prompts tell the story.</h2>
     <div class="comparison" style="margin-top:36px">
@@ -855,7 +843,7 @@
   </div>
 
   <!-- 25 · Cost / Cursor -->
-  <div class="slide" data-slide="24" data-steps="2">
+  <div class="slide" data-slide="24" data-steps="2" data-notes="<strong>The reality check.</strong> Started with Cursor — amazing, but expensive. Thousands per day. They took it away. Vault tracks AI spend. Be intentional. This slide earns trust — you're not just cheerleading.">
     <div class="eyebrow muted">something worth knowing</div>
     <h2>these tools are powerful.<br>they're also expensive.</h2>
     <p class="subtitle step-item" data-step="1" style="margin-top:24px">i started with Cursor because it had access to a model we didn't have in Claude yet. it made things move incredibly fast. we were also spending thousands of dollars a day. they had to take it away.</p>
@@ -863,7 +851,7 @@
   </div>
 
   <!-- 26 · Plan mode -->
-  <div class="slide" data-slide="25" data-steps="2">
+  <div class="slide" data-slide="25" data-steps="2" data-notes="<strong>Practical habit.</strong> Ask it clarifying questions before building. More time upfront = fewer wasted rebuilds. Plan mode in Claude Code does this automatically. This is the #1 tip for reducing cost and frustration.">
     <div class="eyebrow muted">the habit that fixed it</div>
     <h2>spec first.<br>then build.</h2>
     <div class="chat-wrap" style="margin-top:32px">
@@ -877,7 +865,7 @@
   </div>
 
   <!-- 27 · Directing habits -->
-  <div class="slide" data-slide="26" data-steps="3">
+  <div class="slide" data-slide="26" data-steps="3" data-notes="<strong>Three actionable habits.</strong> 1) Component by component — don't boil the ocean. 2) Clean up hourly, push to git early — you'll need somewhere to go back to. 3) Feed it your design system — Ryan and John's docs made everything feel real immediately.">
     <div class="eyebrow muted">a few habits that changed everything</div>
     <h2>things I wish I'd<br>started earlier.</h2>
     <div class="steps" style="margin-top:36px">
@@ -906,7 +894,7 @@
   </div>
 
   <!-- 28 · Owning / feasibility audit -->
-  <div class="slide" data-slide="27" data-steps="2">
+  <div class="slide" data-slide="27" data-steps="2" data-notes="<strong>Level 3 usage.</strong> Use it to think, not just build. The feasibility audit: 'what would it take to connect the catalog API?' Got back a card-by-card breakdown, effort estimates, risk analysis — no code written. Mapped the prototype to real API constraints before any engineer saw it.">
     <div class="eyebrow muted">week 3 — use it to think, not just to build</div>
     <h2>a thinking partner,<br>not just a code writer.</h2>
     <div class="chat-wrap" style="margin-top:32px">
@@ -920,7 +908,7 @@
   </div>
 
   <!-- 29 · Pong debugging -->
-  <div class="slide" data-slide="28" data-steps="4">
+  <div class="slide" data-slide="28" data-steps="4" data-notes="<strong>The debugging saga.</strong> Reveal each attempt one at a time. Build the tension. ZStack reorder — nope. Gesture priority — nope. Custom gesture — nope, full revert. Then the 'got it' row: the feed's ScrollView was stealing touches at 38pt but not 74pt. Platform knowledge still matters.">
     <div class="eyebrow red">the pong debugging saga</div>
     <h2>moving the paddle<br>36 points broke everything.</h2>
     <div class="debug-list step-item" data-step="1">
@@ -950,24 +938,23 @@
   </div>
 
   <!-- 30 · Platform understanding -->
-  <div class="slide" data-slide="29">
+  <div class="slide" data-slide="29" data-notes="<strong>Important nuance.</strong> The tool gets you there faster, but you still need to understand the platform. And honestly? That's a relief — your design instincts still matter. This isn't replacing you, it's amplifying you.">
     <h2>even when you're not<br>writing the code, you still<br>have to understand<br>what's happening.</h2>
     <div class="divider"></div>
     <p class="subtitle">the tool gets you there faster. it doesn't replace knowing the platform. and honestly? that's kind of a relief — your design instincts still matter.</p>
   </div>
 
-  <!-- ═══ CHAPTER 04 ═══ -->
+  <!-- ═══ CHAPTER 03 ═══ -->
 
-  <!-- 31 · Chapter break -->
-  <div class="slide chapter" data-slide="30">
-    <div class="chapter-num">04 —</div>
+  <div class="slide chapter" data-slide="26" data-notes="Chapter 3 — the big takeaway. This is the part you keep telling people about. Land it.">
+    <div class="chapter-num">03 —</div>
     <div class="chapter-line"></div>
     <div class="chapter-title">the thing<br>I figured out.</div>
     <p class="chapter-sub">this is the part i keep telling people about.</p>
   </div>
 
   <!-- 32 · You can teach it your taste -->
-  <div class="slide" data-slide="31" data-steps="2">
+  <div class="slide" data-slide="31" data-steps="2" data-notes="<strong>The big insight.</strong> Converted Emil Kowalski's animation tips into a reusable skill. Now it just knows: scale 0.97, under 300ms, ease-out for enter, spring for interactive. These persist across sessions. Teach it once.">
     <h2>you can teach it<br>your taste.</h2>
     <p class="subtitle step-item" data-step="1" style="margin-top:24px">i converted Emil Kowalski's animation tips into a reusable skill. from that point on it just knew things like:</p>
     <div class="cards step-item" data-step="2" style="margin-top:28px;grid-template-columns:repeat(2,1fr);max-width:680px">
@@ -991,7 +978,7 @@
   </div>
 
   <!-- 33 · Your taste is the skill -->
-  <div class="slide" data-slide="32" data-steps="2">
+  <div class="slide" data-slide="32" data-steps="2" data-notes="<strong>The thesis of the whole talk.</strong> Your taste IS the skill. The tool executes it. Years of knowing what feels right — that's what you bring. You described snappy transitions and it built them in Swift with haptics. The model doesn't have taste. You do. That's what makes the output good.">
     <div class="eyebrow muted">what I mean by that</div>
     <h2>your taste is the skill.<br>the tool executes it.</h2>
     <p class="subtitle step-item" data-step="1" style="margin-top:24px">years of knowing what feels right, what's too slow, what's too fast, what's "shopify" and what isn't — that's the thing you're bringing to this.</p>
@@ -1000,7 +987,7 @@
   </div>
 
   <!-- 34 · We're early / dot graph -->
-  <div class="slide" data-slide="33">
+  <div class="slide" data-slide="33" data-notes="<strong>The waffle chart moment.</strong> Let people scan the dots. 84% of the world has never used AI. We're in the last row — the red dot. We're in an echo chamber. Everyone around us is doing this. Most of the world isn't even close. Let it sink in.">
     <div class="eyebrow muted">feb 2026 — 8.1 billion people</div>
     <h2>it feels like this<br>is everywhere.<br>it really isn't.</h2>
     <div style="display:flex;align-items:flex-start;gap:56px;margin-top:36px">
@@ -1019,7 +1006,7 @@
   </div>
 
   <!-- 35 · The window will close -->
-  <div class="slide" data-slide="34" data-steps="2">
+  <div class="slide" data-slide="34" data-steps="2" data-notes="<strong>Urgency without fear.</strong> The advantage of being early fades. The constraint of not shipping yourself — that's gone right now. Three weeks ago Cursor felt like magic, now working in the terminal. Tools are moving faster than this talk. Very few companies give you this access. Don't waste it.">
     <div class="eyebrow amber">this window will close</div>
     <h2>more people using it<br>means less advantage<br>for being early.</h2>
     <p class="subtitle step-item" data-step="1" style="margin-top:24px">right now, the constraint of not being able to ship things yourself — that's gone. you can build whatever you want. that is not a permanent state of the world.</p>
@@ -1028,21 +1015,21 @@
   </div>
 
   <!-- 36 · Discussion -->
-  <div class="slide discussion" data-slide="35">
+  <div class="slide discussion" data-slide="35" data-notes="<strong>Open it up.</strong> Go around the room. What would you build in your first session? Give people time to think. If it's quiet, prompt with: 'what's a problem you keep running into that you wish you could just fix yourself?'">
     <div class="discussion-badge">💬 your turn</div>
     <h2>what's something you've<br>been wanting to try<br>but haven't yet?</h2>
     <p class="subtitle" style="margin-top:24px">go around the room. what would you build in your first session?</p>
   </div>
 
   <!-- 37 · Be vulnerable -->
-  <div class="slide" data-slide="36">
+  <div class="slide" data-slide="36" data-notes="<strong>Bring it back to culture.</strong> You're being vulnerable right now. Invite people to tell you what you're doing wrong. We have a company with low ego and friendly people. Build in public, share rough work.">
     <h2>try to be a little<br>bit vulnerable.</h2>
     <p class="subtitle" style="margin-top:28px">i'm doing this right now. some of you will probably tell me i'm doing things wrong — and that's great, because i want to learn.</p>
     <p class="subtitle" style="margin-top:20px">we have a company full of people with very little ego who are friendly and nice. use that. build in public. share what you're making even when it's rough.</p>
   </div>
 
   <!-- 38 · Three things -->
-  <div class="slide" data-slide="37" data-steps="3">
+  <div class="slide" data-slide="37" data-steps="3" data-notes="<strong>The takeaways.</strong> Reveal one at a time. 1) One hour a day — not to learn, to build. 2) Ask someone to show you their setup — 5 min > hours of tutorials. 3) Remember where we are — this access and latitude is rare. Don't waste it.">
     <div class="eyebrow green">three things</div>
     <h2>if you take one<br>thing from today.</h2>
     <div class="steps">
@@ -1064,14 +1051,14 @@
         <div class="step-num">3</div>
         <div class="step-content">
           <h4>remember where we are</h4>
-          <p>very few companies have this kind of access and latitude to just go try things. don't waste it.</p>
+          <p>this access, these tools, the latitude to experiment — it won't always be like this. use it now.</p>
         </div>
       </div>
     </div>
   </div>
 
   <!-- 39 · Close -->
-  <div class="slide centered" data-slide="38">
+  <div class="slide centered" data-slide="38" data-notes="<strong>End on emotion.</strong> Let the quote land. Pause. 'Just get excited about this. Because I am.' Hold for a beat. Thank the room.">
     <p class="big-quote">"I felt behind.<br>Then I built the thing.<br>Now I feel like I'm<br>just getting started."</p>
     <div class="divider"></div>
     <p class="subtitle">just get excited about this. because I am.</p>
@@ -1136,6 +1123,7 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { closeGrid(); return; }
     if (document.getElementById('grid-overlay')) return;
+    if (isEditing) return;
     if (['ArrowRight', 'ArrowDown', ' '].includes(e.key)) { e.preventDefault(); advance(); }
     if (['ArrowLeft', 'ArrowUp'].includes(e.key)) { e.preventDefault(); retreat(); }
   });
@@ -1158,12 +1146,7 @@
   function makeBlankSlideElement() {
     const el = document.createElement('div');
     el.className = 'slide blank-slide';
-    el.innerHTML = `<div class="blank-hint"><div class="blank-hint-icon">+</div><p>click to add media, or drag &amp; drop</p></div>`;
-    el.addEventListener('click', e => {
-      if (e.target.closest('.slide-media')) return;
-      e.stopPropagation();
-      mediaInput.click();
-    });
+    el.innerHTML = `<div class="blank-hint"><div class="blank-hint-icon">+</div><p>drag &amp; drop media, or use the + button</p></div>`;
     return el;
   }
 
@@ -1426,10 +1409,44 @@
     dbSave(current);
   });
 
+  let selectedMedia = null;
+
+  function selectMedia(el) {
+    if (selectedMedia) selectedMedia.classList.remove('selected');
+    selectedMedia = el;
+    el.classList.add('selected');
+    updateLayerBadges();
+  }
+
+  function deselectMedia() {
+    if (selectedMedia) selectedMedia.classList.remove('selected');
+    selectedMedia = null;
+  }
+
+  function updateLayerBadges() {
+    const slide = slides[current];
+    const mediaEls = [...slide.querySelectorAll('.slide-media')];
+    mediaEls.forEach((el, i) => {
+      let badge = el.querySelector('.media-layer-badge');
+      if (!badge) {
+        badge = document.createElement('div');
+        badge.className = 'media-layer-badge';
+        el.appendChild(badge);
+      }
+      badge.textContent = `${i + 1} / ${mediaEls.length}`;
+    });
+  }
+
+  // deselect when clicking outside media
+  document.addEventListener('mousedown', e => {
+    if (!e.target.closest('.slide-media')) deselectMedia();
+  });
+
   function makeDraggable(el, idx, item) {
     el.addEventListener('mousedown', e => {
       if (e.target.closest('.media-remove') || e.target.closest('.media-resize')) return;
       e.preventDefault(); e.stopPropagation();
+      selectMedia(el);
 
       const startX = e.clientX, startY = e.clientY;
       const startL = parseFloat(el.style.left), startT = parseFloat(el.style.top);
@@ -1515,19 +1532,23 @@
     });
   }
 
+  let isEditing = false;
+
   document.getElementById('deck').addEventListener('click', e => {
     const el = e.target.closest(EDITABLE);
     if (!el || !el.closest('.slide') || el.isContentEditable) return;
     e.stopPropagation();
     el.contentEditable = 'true';
     el.focus();
+    isEditing = true;
     el.addEventListener('blur', () => {
       el.contentEditable = 'false';
+      isEditing = false;
       if (el.dataset.eid) saveTextEdit(el.dataset.eid, el.innerHTML);
     }, { once: true });
     el.addEventListener('keydown', e => {
       if (e.key === 'Escape') { e.preventDefault(); el.blur(); }
-    }, { once: true });
+    });
   });
 
   tagEditables();
@@ -1602,8 +1623,33 @@
   });
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'p' && !e.target.isContentEditable && document.activeElement.tagName !== 'INPUT') {
+    if (e.target.isContentEditable || isEditing) return;
+    if (e.key === 'p' && document.activeElement.tagName !== 'INPUT') {
       penBtn.click();
+    }
+    // bracket keys to reorder selected media layers
+    if ((e.key === '[' || e.key === ']') && selectedMedia) {
+      e.preventDefault();
+      const slide = slides[current];
+      const mediaEls = [...slide.querySelectorAll('.slide-media')];
+      const i = mediaEls.indexOf(selectedMedia);
+      if (i === -1) return;
+      const items = slideMedia[current];
+      if (!items) return;
+
+      if (e.key === ']' && i < mediaEls.length - 1) {
+        // move up: swap with next sibling in DOM
+        selectedMedia.parentNode.insertBefore(mediaEls[i + 1], selectedMedia);
+        // swap in data array
+        [items[i], items[i + 1]] = [items[i + 1], items[i]];
+      } else if (e.key === '[' && i > 0) {
+        // move down: swap with previous sibling in DOM
+        selectedMedia.parentNode.insertBefore(selectedMedia, mediaEls[i - 1]);
+        // swap in data array
+        [items[i], items[i - 1]] = [items[i - 1], items[i]];
+      }
+      updateLayerBadges();
+      dbSave(current);
     }
   });
 
@@ -1631,11 +1677,33 @@
 
   loadCanvasSlide(0);
 
-  // ── title letter font scramble ──
-  (function() {
-    const h1 = slides[0].querySelector('h1');
-    if (!h1) return;
+  // ── speaker notes ──
+  const notesBar = document.getElementById('notes-bar');
+  const notesText = document.getElementById('notes-text');
+  let notesVisible = false;
 
+  function updateNotes() {
+    const notes = slides[current]?.dataset.notes || '';
+    notesText.innerHTML = notes || '<em style="color:var(--muted)">No notes for this slide.</em>';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'n' && !e.target.isContentEditable && document.activeElement.tagName !== 'INPUT') {
+      notesVisible = !notesVisible;
+      notesBar.classList.toggle('visible', notesVisible);
+      if (notesVisible) updateNotes();
+    }
+  });
+
+  // patch goTo to update notes
+  const _origGoTo = goTo;
+  goTo = function(index) {
+    _origGoTo(index);
+    if (notesVisible) updateNotes();
+  };
+
+  // ── letter font scramble ──
+  (function() {
     const FONTS = [
       '"Times New Roman", serif',
       '"Courier New", monospace',
@@ -1659,42 +1727,47 @@
       '"Optima", sans-serif',
     ];
 
-    h1.innerHTML = h1.innerHTML
-      .replace(/(<br\s*\/?>)/gi, '§§')
-      .split('§§')
-      .map(seg => seg.split('').map(ch =>
-        ch === ' ' ? ' ' : `<span class="title-letter">${ch}</span>`
-      ).join(''))
-      .join('<br>');
+    function applyScramble(el, lockSizes) {
+      if (!el) return;
+      el.innerHTML = el.innerHTML
+        .replace(/(<br\s*\/?>)/gi, '§§')
+        .split('§§')
+        .map(seg => seg.split('').map(ch =>
+          ch === ' ' ? ' ' : `<span class="title-letter">${ch}</span>`
+        ).join(''))
+        .join('<br>');
 
-    // Lock each letter's dimensions so font changes don't reflow the line
-    requestAnimationFrame(() => {
-      h1.querySelectorAll('.title-letter').forEach(s => {
-        const r = s.getBoundingClientRect();
-        s.style.width  = r.width  + 'px';
-        s.style.height = r.height + 'px';
+      if (lockSizes) {
+        requestAnimationFrame(() => {
+          el.querySelectorAll('.title-letter').forEach(s => {
+            const r = s.getBoundingClientRect();
+            s.style.width  = r.width  + 'px';
+            s.style.height = r.height + 'px';
+          });
+        });
+      }
+
+      el.querySelectorAll('.title-letter').forEach(span => {
+        let timer = null;
+        span.addEventListener('mouseenter', () => {
+          span.classList.add('lifted');
+          const cycle = () => {
+            span.style.fontFamily = FONTS[Math.floor(Math.random() * FONTS.length)];
+            timer = setTimeout(cycle, 45 + Math.random() * 35);
+          };
+          cycle();
+        });
+        span.addEventListener('mouseleave', () => {
+          span.classList.remove('lifted');
+          clearTimeout(timer);
+          timer = null;
+          span.style.fontFamily = '';
+        });
       });
-    });
+    }
 
-    h1.querySelectorAll('.title-letter').forEach(span => {
-      let timer = null;
-
-      span.addEventListener('mouseenter', () => {
-        span.classList.add('lifted');
-        const cycle = () => {
-          span.style.fontFamily = FONTS[Math.floor(Math.random() * FONTS.length)];
-          timer = setTimeout(cycle, 45 + Math.random() * 35);
-        };
-        cycle();
-      });
-
-      span.addEventListener('mouseleave', () => {
-        span.classList.remove('lifted');
-        clearTimeout(timer);
-        timer = null;
-        span.style.fontFamily = '';
-      });
-    });
+    applyScramble(slides[0].querySelector('h1'), true);
+    applyScramble(document.querySelector('[data-slide="15"] h2'), false);
   })();
 </script>
 </body>
