@@ -661,7 +661,7 @@
       <span class="pill landed">Spin the Wheel</span>
       <span class="pill landed">Pong card</span>
       <span class="pill landed">Pick Your Color</span>
-      <span class="pill landed">F1 Card</span>
+
       <span class="pill landed">Shop the Bin</span>
       <span class="pill landed">Explore Topics</span>
       <span class="pill landed">Floating Outfits</span>
@@ -777,15 +777,6 @@
     <p class="subtitle" style="margin-top:16px">Doris mocked up the concept. I took two screenshots and one recording of it over lunch and built the whole thing out.</p>
     <p class="subtitle step-item" data-step="1" style="margin-top:20px">someone has an idea, you screenshot their mock, and there's a working version before you finish your sandwich.</p>
     <p class="subtitle step-item" data-step="2" style="margin-top:16px;color:var(--text)">that's the speed now. ideas don't sit in a backlog — they just get built.</p>
-  </div>
-
-  <!-- F1 card -->
-  <div class="slide" data-slide="15" data-steps="2" data-notes="<strong>Card 7.</strong> Timely, relevant content. All the F1 stores are on Shopify. Pulled assets from their sites, built a simple card. The insight: we can build around cultural moments fast.">
-    <div class="eyebrow muted">card 07</div>
-    <h2>F1 Card</h2>
-    <p class="subtitle" style="margin-top:16px">exploring timely, culturally relevant content for the feed. turns out all the F1 team stores are on Shopify — pulled some assets from their sites and built a card around it.</p>
-    <p class="subtitle step-item" data-step="1" style="margin-top:20px">simple concept, quick build. the kind of thing you prototype to see if the idea even has legs.</p>
-    <p class="subtitle step-item" data-step="2" style="margin-top:16px;color:var(--text)">we can build around cultural moments fast. that's a new capability.</p>
   </div>
 
   <!-- Shop the Bin -->
@@ -955,43 +946,6 @@
     </div>
     <p class="subtitle step-item" data-step="1" style="margin-top:24px">got back a card-by-card breakdown, effort estimates, full risk analysis. without writing a line of code.</p>
     <p class="subtitle step-item" data-step="2" style="margin-top:12px;color:var(--text)">mapped the whole prototype to real API constraints. before any engineer saw it.</p>
-  </div>
-
-  <!-- 29 · Pong debugging -->
-  <div class="slide" data-slide="28" data-steps="4" data-notes="<strong>The debugging saga.</strong> Reveal each attempt one at a time. Build the tension. ZStack reorder — nope. Gesture priority — nope. Custom gesture — nope, full revert. Then the 'got it' row: the feed's ScrollView was stealing touches at 38pt but not 74pt. Platform knowledge still matters.">
-    <div class="eyebrow red">the pong debugging saga</div>
-    <h2>moving the paddle<br>36 points broke everything.</h2>
-    <div class="debug-list step-item" data-step="1">
-      <div class="debug-row">
-        <span class="attempt">attempt 1</span>
-        ZStack reorder — still broken
-      </div>
-    </div>
-    <div class="debug-list step-item" data-step="2" style="margin-top:0">
-      <div class="debug-row">
-        <span class="attempt">attempt 2</span>
-        gesture priority — still broken
-      </div>
-    </div>
-    <div class="debug-list step-item" data-step="3" style="margin-top:0">
-      <div class="debug-row">
-        <span class="attempt">attempt 3</span>
-        custom gesture — still broken. full revert.
-      </div>
-    </div>
-    <div class="debug-list step-item" data-step="4" style="margin-top:0">
-      <div class="debug-row success">
-        <span class="attempt">got it</span>
-        the feed's ScrollView was stealing touches. handle works at 74pt but not at 38pt.
-      </div>
-    </div>
-  </div>
-
-  <!-- 30 · Platform understanding -->
-  <div class="slide" data-slide="29" data-notes="<strong>Important nuance.</strong> The tool gets you there faster, but you still need to understand the platform. And honestly? That's a relief — your design instincts still matter. This isn't replacing you, it's amplifying you.">
-    <h2>even when you're not<br>writing the code, you still<br>have to understand<br>what's happening.</h2>
-    <div class="divider"></div>
-    <p class="subtitle">the tool gets you there faster. it doesn't replace knowing the platform. and honestly? that's kind of a relief — your design instincts still matter.</p>
   </div>
 
   <!-- ═══ CHAPTER 03 ═══ -->
